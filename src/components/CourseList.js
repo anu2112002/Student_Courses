@@ -1,19 +1,19 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CourseList from './components/CourseList';
-import CourseDetails from './components/CourseDetails';
-import StudentDashboard from './components/StudentDashboard';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-const App = () => {
-  // Dummy data to be passed to components
-  const courses = [
+const CourseList = () => {
+  const [courses, setCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Dummy data to simulate API response
+  const dummyCourses = [
     {
       id: 1,
       name: 'Introduction to React Native',
       instructor: 'John Doe',
       description: 'Learn the basics of React Native development and build your first mobile app.',
       enrollmentStatus: 'Open',
-      thumbnail: 'https://devtop.io/wp-content/uploads/2022/10/react-native-1.png',
+      thumbnail: 'https://via.placeholder.com/150',
       duration: '8 weeks',
       schedule: 'Tuesdays and Thursdays, 6:00 PM - 8:00 PM',
       location: 'Online',
@@ -41,36 +41,44 @@ const App = () => {
     },
   ];
 
-  const enrolledCourses = [
-    {
-      id: 1,
-      name: 'Introduction to React Native',
-      instructor: 'John Doe',
-      dueDate: '2024-12-01',
-      progress: 50,
-      completed: false,
-      thumbnail: 'https://via.placeholder.com/150'
-    },
-    {
-      id: 2,
-      name: 'Advanced React',
-      instructor: 'Jane Smith',
-      dueDate: '2024-11-15',
-      progress: 80,
-      completed: false,
-      thumbnail: 'https://via.placeholder.com/150'
-    },
-  ];
+  useEffect(() => {
+    // Simulate fetching data from an API
+    setTimeout(() => {
+      setCourses(dummyCourses);
+    }, 500);
+  }, []);
+
+  const filteredCourses = courses.filter(course =>
+    course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.instructor.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<CourseList />} />
-        <Route path="/courses/:id" element={<CourseDetails courses={courses} />} />
-        <Route path="/dashboard" element={<StudentDashboard enrolledCourses={enrolledCourses} />} />
-      </Routes>
-    </Router>
+    <div>
+      <h2>Course List</h2>
+      <input
+        type="text"
+        placeholder="Search courses..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <ul>
+        {filteredCourses.map(course => (
+          <li key={course.id}>
+            <Link to={`/courses/${course.id}`}>
+              <div>
+                <img src={course.thumbnail} alt={course.name} style={{ width: '100px', height: '100px' }} />
+                <div>
+                  <h3>{course.name}</h3>
+                  <p>{course.instructor}</p>
+                </div>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-export default App;
+export default CourseList;
